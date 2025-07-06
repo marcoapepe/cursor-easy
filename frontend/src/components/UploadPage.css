@@ -1,11 +1,11 @@
-.darf-page {
+.upload-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.darf-container {
+.upload-container {
   max-width: 1000px;
   margin: 0 auto;
   background: white;
@@ -388,7 +388,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .darf-page {
+  .upload-page {
     padding: 10px;
   }
   

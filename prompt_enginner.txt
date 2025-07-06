@@ -124,3 +124,11 @@ So the page should have two options:
 2. Process file (that will save the records of the file into contribuinte table)
 The process file needs to call the backend using the existing put or post methods.
 Or create a new endpoint in the backend to handle this process.	
+
+in the frontend, let's remove the working in progress option and page for e-Financeira. 
+The main page will have only two options:
+- Contribuinte
+- DARF
+But I want to replace the name DARF by Upload. Change all references to DARF in the project.
+That means rename DARFPage.css and DARFPage.js to UploadPage.
+I don't want to see any page or code with the name DARF. I want to see Upload instead.

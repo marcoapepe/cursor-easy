@@ -5,8 +5,7 @@ import './App.css';
 // Import components
 import HomePage from './components/HomePage';
 import ContribuintePage from './components/ContribuintePage';
-import WorkInProgressPage from './components/WorkInProgressPage';
-import DarfPage from './components/DarfPage';
+import UploadPage from './components/UploadPage';
 
 function App() {
   return (
@@ -15,8 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/contribuinte" element={<ContribuintePage />} />
-          <Route path="/e-financeira" element={<WorkInProgressPage title="e-Financeira" />} />
-          <Route path="/darf" element={<DarfPage />} />
+          <Route path="/upload" element={<UploadPage />} />
         </Routes>
       </div>
     </Router>

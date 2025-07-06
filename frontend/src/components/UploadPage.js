@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './DarfPage.css';
+import './UploadPage.css';
 
-function DarfPage() {
+function UploadPage() {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -103,8 +103,8 @@ function DarfPage() {
   };
 
   return (
-    <div className="darf-page">
-      <div className="darf-container">
+    <div className="upload-page">
+      <div className="upload-container">
         <div className="page-header">
           <button 
             className="back-button"
@@ -112,7 +112,7 @@ function DarfPage() {
           >
             ← Back to Home
           </button>
-          <h1>DARF - File Upload</h1>
+          <h1>Upload - File Upload</h1>
         </div>
 
         <div className="upload-section">
@@ -244,4 +244,4 @@ function DarfPage() {
   );
 }
 
-export default DarfPage; 
+export default UploadPage; 

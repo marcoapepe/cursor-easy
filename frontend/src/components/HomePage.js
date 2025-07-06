@@ -26,20 +26,11 @@ function HomePage() {
           
           <div 
             className="option-card"
-            onClick={() => handleOptionClick('/e-financeira')}
+            onClick={() => handleOptionClick('/upload')}
           >
-            <div className="option-icon">💰</div>
-            <h2>e-Financeira</h2>
-            <p>Financial management system</p>
-          </div>
-          
-          <div 
-            className="option-card"
-            onClick={() => handleOptionClick('/darf')}
-          >
-            <div className="option-icon">📄</div>
-            <h2>DARF</h2>
-            <p>DARF document management</p>
+            <div className="option-icon">📁</div>
+            <h2>Upload</h2>
+            <p>Upload contribuinte records from files</p>
           </div>
         </div>
       </div>
