@@ -67,3 +67,60 @@ That's it.
 
 entrar no diretorio frontend
 npm start
+
+
+github
+ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub
+
+git 
+
+git push -u origin master
+
+
+Add a new endpoint the records from contribuinte table where client field like the string parameter.
+Example: Given the string "Pepe", it should bring all contribuinte rows with like "%Pepe%" in client field.
+
+in the frontend, on Contribuinte table, add two more filter fields at the top side by side with the current date field.
+First field, CPF/CNPJ text field where user can filter all contribuintes by cpf_cnpj 
+using this endpoint of backend project:
+@router.get("/cpf/{cpf_cnpj}", response_model=schemas.Contribuinte)
+def read_contribuinte_by_cpf(
+    cpf_cnpj: str,
+    db: Session = Depends(get_db)
+):
+
+The second field with name Client Name, a text field, the user can type part of the client name.
+this filter will can the new endpoint just created in the backend called:
+@router.get("/by-client/{client_name}", response_model=List[schemas.Contribuinte])
+def read_contribuintes_by_client(
+    client_name: str,
+    db: Session = Depends(get_db)
+):
+
+The ContribuintePage will have 3 fields to filter. 
+If date is choosen, the other 2 fields should be put in blank. 
+Only one field at the time can be selected. 
+If a cpf_cnpj is typed by the user, the other 2 fields should be blank. 
+After filtering on any of these 3 fields, result should be shown on the grid.
+
+Now let's enhance the other working in progress page called DARF page.
+This DARF page can be acessed through the main page. 
+The DARF Page needs to have the following feature:
+User can upload or drag and drop csv files like this:
+novos_contribuintes.txt
+it has this example of content. Two records, csv, with ; character as delimiter
+2025-07-06;77845896512;Rodrigo Pepe;rodrigo@uol.com.br;2025-06-02
+2025-07-06;55544433312;Eric Pepe;eric@bol.com.br;2025-06-02
+After uploading the file on screen, the page should add the records in contribuinte table.
+This file has the columns of contribuinte table:
+	dat_proce DATE,
+	cpf_cnpj VARCHAR(14),
+	cliente VARCHAR(80),
+	email VARCHAR(255),
+	dat_cadastro DATE 
+So the page should have two options:
+1. Upload file (or drag and drop)
+2. Process file (that will save the records of the file into contribuinte table)
+The process file needs to call the backend using the existing put or post methods.
+Or create a new endpoint in the backend to handle this process.	

@@ -7,11 +7,19 @@ import './ContribuintePage.css';
 function ContribuintePage() {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState('');
+  const [cpfCnpj, setCpfCnpj] = useState('');
+  const [clientName, setClientName] = useState('');
   const [contribuintes, setContribuintes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const API_BASE_URL = 'http://localhost:8000';
+
+  const clearOtherFilters = (activeFilter) => {
+    if (activeFilter !== 'date') setSelectedDate('');
+    if (activeFilter !== 'cpf') setCpfCnpj('');
+    if (activeFilter !== 'client') setClientName('');
+  };
 
   const fetchContribuintesByDate = async (date) => {
     if (!date) {
@@ -34,10 +42,72 @@ function ContribuintePage() {
     }
   };
 
+  const fetchContribuinteByCpf = async (cpf) => {
+    if (!cpf) {
+      setContribuintes([]);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.get(`${API_BASE_URL}/contribuinte/cpf/${cpf}`);
+      // Convert single result to array for consistency
+      setContribuintes([response.data]);
+    } catch (err) {
+      console.error('Error fetching contribuinte by CPF:', err);
+      if (err.response?.status === 404) {
+        setError('CPF/CNPJ not found');
+      } else {
+        setError(err.response?.data?.detail || 'Error fetching data');
+      }
+      setContribuintes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchContribuintesByClient = async (client) => {
+    if (!client) {
+      setContribuintes([]);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.get(`${API_BASE_URL}/contribuinte/by-client/${client}`);
+      setContribuintes(response.data);
+    } catch (err) {
+      console.error('Error fetching contribuintes by client:', err);
+      setError(err.response?.data?.detail || 'Error fetching data');
+      setContribuintes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDateChange = (e) => {
     const date = e.target.value;
     setSelectedDate(date);
+    clearOtherFilters('date');
     fetchContribuintesByDate(date);
+  };
+
+  const handleCpfCnpjChange = (e) => {
+    const cpf = e.target.value;
+    setCpfCnpj(cpf);
+    clearOtherFilters('cpf');
+    fetchContribuinteByCpf(cpf);
+  };
+
+  const handleClientNameChange = (e) => {
+    const client = e.target.value;
+    setClientName(client);
+    clearOtherFilters('client');
+    fetchContribuintesByClient(client);
   };
 
   const formatDate = (dateString) => {
@@ -46,6 +116,21 @@ function ContribuintePage() {
     } catch {
       return dateString;
     }
+  };
+
+  const getActiveFilter = () => {
+    if (selectedDate) return 'date';
+    if (cpfCnpj) return 'cpf';
+    if (clientName) return 'client';
+    return null;
+  };
+
+  const getFilterDisplayText = () => {
+    const activeFilter = getActiveFilter();
+    if (activeFilter === 'date') return `Date: ${formatDate(selectedDate)}`;
+    if (activeFilter === 'cpf') return `CPF/CNPJ: ${cpfCnpj}`;
+    if (activeFilter === 'client') return `Client: ${clientName}`;
+    return null;
   };
 
   return (
@@ -61,15 +146,46 @@ function ContribuintePage() {
           <h1>Contribuinte Management</h1>
         </div>
 
-        <div className="date-filter-section">
-          <label htmlFor="date-picker">Select Process Date:</label>
-          <input
-            id="date-picker"
-            type="date"
-            value={selectedDate}
-            onChange={handleDateChange}
-            className="date-input"
-          />
+        <div className="filters-section">
+          <div className="filter-row">
+            <div className="filter-group">
+              <label htmlFor="date-picker">Process Date:</label>
+              <input
+                id="date-picker"
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                className="filter-input"
+                placeholder="Select date"
+              />
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="cpf-cnpj">CPF/CNPJ:</label>
+              <input
+                id="cpf-cnpj"
+                type="text"
+                value={cpfCnpj}
+                onChange={handleCpfCnpjChange}
+                className="filter-input"
+                placeholder="Enter CPF or CNPJ"
+                maxLength="14"
+              />
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="client-name">Client Name:</label>
+              <input
+                id="client-name"
+                type="text"
+                value={clientName}
+                onChange={handleClientNameChange}
+                className="filter-input"
+                placeholder="Enter client name"
+                maxLength="80"
+              />
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -87,11 +203,11 @@ function ContribuintePage() {
         <div className="results-section">
           {contribuintes.length > 0 ? (
             <div className="results-info">
-              Found {contribuintes.length} record(s) for {formatDate(selectedDate)}
+              Found {contribuintes.length} record(s) for {getFilterDisplayText()}
             </div>
-          ) : selectedDate && !loading ? (
+          ) : (selectedDate || cpfCnpj || clientName) && !loading ? (
             <div className="no-results">
-              No records found for {formatDate(selectedDate)}
+              No records found for {getFilterDisplayText()}
             </div>
           ) : null}
         </div>
