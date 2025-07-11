@@ -21,6 +21,13 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  justify-content: space-between;
+}
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .back-button {
@@ -45,6 +52,45 @@
   font-size: 2.5rem;
   font-weight: 300;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.module-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.module-selector label {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.module-select {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 120px;
+}
+
+.module-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.module-select option {
+  background: #667eea;
+  color: white;
 }
 
 .filters-section {
@@ -190,8 +236,24 @@
     gap: 15px;
   }
   
+  .page-header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
   .page-header h1 {
     font-size: 2rem;
+  }
+  
+  .module-selector {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .module-select {
+    width: 100%;
+    max-width: 200px;
   }
   
   .filters-section {

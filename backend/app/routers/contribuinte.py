@@ -1,19 +1,24 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime
 import csv
 import io
 from .. import models, schemas
-from ..database import get_db
+from ..database import get_db, get_db_by_module
 
 router = APIRouter(prefix="/contribuinte", tags=["contribuinte"])
+
+def get_db_session(module: str = Query("A", description="Module to use (A or B)")):
+    for db in get_db_by_module(module):
+        yield db
 
 @router.post("/", response_model=schemas.Contribuinte)
 def create_contribuinte(
     contribuinte: schemas.ContribuinteCreate,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     # Check if CPF/CNPJ already exists
     existing = db.query(models.Contribuinte).filter(
@@ -40,7 +45,8 @@ def create_contribuinte(
 def read_contribuintes(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     contribuintes = db.query(models.Contribuinte).offset(skip).limit(limit).all()
     return contribuintes
@@ -48,7 +54,8 @@ def read_contribuintes(
 @router.get("/by-date/{dat_proce}", response_model=List[schemas.Contribuinte])
 def read_contribuintes_by_date(
     dat_proce: str,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     """
     Get all contribuintes for a specific process date (dat_proce).
@@ -72,7 +79,8 @@ def read_contribuintes_by_date(
 @router.get("/by-client/{client_name}", response_model=List[schemas.Contribuinte])
 def read_contribuintes_by_client(
     client_name: str,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     """
     Get all contribuintes where client name contains the search string.
@@ -88,7 +96,8 @@ def read_contribuintes_by_client(
 @router.get("/{ref_id}", response_model=schemas.Contribuinte)
 def read_contribuinte(
     ref_id: int,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     contribuinte = db.query(models.Contribuinte).filter(
         models.Contribuinte.ref_id == ref_id
@@ -100,7 +109,8 @@ def read_contribuinte(
 @router.get("/cpf/{cpf_cnpj}", response_model=schemas.Contribuinte)
 def read_contribuinte_by_cpf(
     cpf_cnpj: str,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     contribuinte = db.query(models.Contribuinte).filter(
         models.Contribuinte.cpf_cnpj == cpf_cnpj
@@ -113,7 +123,8 @@ def read_contribuinte_by_cpf(
 def update_contribuinte(
     ref_id: int,
     contribuinte_update: schemas.ContribuinteUpdate,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     db_contribuinte = db.query(models.Contribuinte).filter(
         models.Contribuinte.ref_id == ref_id
@@ -151,7 +162,8 @@ def update_contribuinte(
 @router.delete("/{ref_id}")
 def delete_contribuinte(
     ref_id: int,
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     db_contribuinte = db.query(models.Contribuinte).filter(
         models.Contribuinte.ref_id == ref_id
@@ -166,7 +178,8 @@ def delete_contribuinte(
 @router.post("/bulk-upload", response_model=dict)
 def bulk_upload_contribuintes(
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    module: str = Query("A", description="Module to use (A or B)"),
+    db: Session = Depends(get_db_session)
 ):
     """
     Upload a CSV file with contribuinte records.

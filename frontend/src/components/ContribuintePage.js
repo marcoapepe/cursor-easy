@@ -6,6 +6,7 @@ import './ContribuintePage.css';
 
 function ContribuintePage() {
   const navigate = useNavigate();
+  const [selectedModule, setSelectedModule] = useState('A'); // Default to Module A
   const [selectedDate, setSelectedDate] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [clientName, setClientName] = useState('');
@@ -31,7 +32,7 @@ function ContribuintePage() {
     setError('');
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/contribuinte/by-date/${date}`);
+      const response = await axios.get(`${API_BASE_URL}/contribuinte/by-date/${date}?module=${selectedModule}`);
       setContribuintes(response.data);
     } catch (err) {
       console.error('Error fetching contribuintes:', err);
@@ -52,7 +53,7 @@ function ContribuintePage() {
     setError('');
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/contribuinte/cpf/${cpf}`);
+      const response = await axios.get(`${API_BASE_URL}/contribuinte/cpf/${cpf}?module=${selectedModule}`);
       // Convert single result to array for consistency
       setContribuintes([response.data]);
     } catch (err) {
@@ -78,7 +79,7 @@ function ContribuintePage() {
     setError('');
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/contribuinte/by-client/${client}`);
+      const response = await axios.get(`${API_BASE_URL}/contribuinte/by-client/${client}?module=${selectedModule}`);
       setContribuintes(response.data);
     } catch (err) {
       console.error('Error fetching contribuintes by client:', err);
@@ -86,6 +87,25 @@ function ContribuintePage() {
       setContribuintes([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleModuleChange = (e) => {
+    const newModule = e.target.value;
+    setSelectedModule(newModule);
+    
+    // Clear current results when module changes
+    setContribuintes([]);
+    setError('');
+    
+    // Re-fetch data if there's an active filter
+    const activeFilter = getActiveFilter();
+    if (activeFilter === 'date' && selectedDate) {
+      fetchContribuintesByDate(selectedDate);
+    } else if (activeFilter === 'cpf' && cpfCnpj) {
+      fetchContribuinteByCpf(cpfCnpj);
+    } else if (activeFilter === 'client' && clientName) {
+      fetchContribuintesByClient(clientName);
     }
   };
 
@@ -137,13 +157,27 @@ function ContribuintePage() {
     <div className="contribuinte-page">
       <div className="contribuinte-container">
         <div className="page-header">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/')}
-          >
-            ← Back to Home
-          </button>
-          <h1>Contribuinte Management</h1>
+          <div className="page-header-left">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/')}
+            >
+              ← Back to Home
+            </button>
+            <h1>Contribuinte Management</h1>
+          </div>
+          <div className="module-selector">
+            <label htmlFor="module-select">Module:</label>
+            <select
+              id="module-select"
+              value={selectedModule}
+              onChange={handleModuleChange}
+              className="module-select"
+            >
+              <option value="A">Module A</option>
+              <option value="B">Module B</option>
+            </select>
+          </div>
         </div>
 
         <div className="filters-section">
@@ -203,11 +237,11 @@ function ContribuintePage() {
         <div className="results-section">
           {contribuintes.length > 0 ? (
             <div className="results-info">
-              Found {contribuintes.length} record(s) for {getFilterDisplayText()}
+              Found {contribuintes.length} record(s) for {getFilterDisplayText()} in Module {selectedModule}
             </div>
           ) : (selectedDate || cpfCnpj || clientName) && !loading ? (
             <div className="no-results">
-              No records found for {getFilterDisplayText()}
+              No records found for {getFilterDisplayText()} in Module {selectedModule}
             </div>
           ) : null}
         </div>

@@ -5,6 +5,7 @@ import './UploadPage.css';
 
 function UploadPage() {
   const navigate = useNavigate();
+  const [selectedModule, setSelectedModule] = useState('A'); // Default to Module A
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,6 +53,13 @@ function UploadPage() {
     fileInputRef.current.click();
   };
 
+  const handleModuleChange = (e) => {
+    setSelectedModule(e.target.value);
+    // Clear results when module changes
+    setUploadResult(null);
+    setError('');
+  };
+
   const processFile = async () => {
     if (!selectedFile) {
       setError('Please select a file first');
@@ -67,7 +75,7 @@ function UploadPage() {
       formData.append('file', selectedFile);
 
       const response = await axios.post(
-        `${API_BASE_URL}/contribuinte/bulk-upload`,
+        `${API_BASE_URL}/contribuinte/bulk-upload?module=${selectedModule}`,
         formData,
         {
           headers: {
@@ -106,19 +114,33 @@ function UploadPage() {
     <div className="upload-page">
       <div className="upload-container">
         <div className="page-header">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/')}
-          >
-            ← Back to Home
-          </button>
-          <h1>Upload - File Upload</h1>
+          <div className="page-header-left">
+            <button 
+              className="back-button"
+              onClick={() => navigate('/')}
+            >
+              ← Back to Home
+            </button>
+            <h1>Upload - File Upload</h1>
+          </div>
+          <div className="module-selector">
+            <label htmlFor="module-select">Module:</label>
+            <select
+              id="module-select"
+              value={selectedModule}
+              onChange={handleModuleChange}
+              className="module-select"
+            >
+              <option value="A">Module A</option>
+              <option value="B">Module B</option>
+            </select>
+          </div>
         </div>
 
         <div className="upload-section">
           <div className="upload-info">
             <h2>Upload Contribuinte Records</h2>
-            <p>Upload a CSV or TXT file with contribuinte records in the following format:</p>
+            <p>Upload a CSV or TXT file with contribuinte records to <strong>Module {selectedModule}</strong> in the following format:</p>
             <div className="format-example">
               <code>dat_proce;cpf_cnpj;cliente;email;dat_cadastro</code>
             </div>
@@ -201,7 +223,7 @@ function UploadPage() {
         {uploadResult && (
           <div className="result-section">
             <div className={`result-card ${uploadResult.error_count > 0 ? 'has-errors' : 'success'}`}>
-              <h3>Upload Results</h3>
+              <h3>Upload Results for Module {selectedModule}</h3>
               
               <div className="result-stats">
                 <div className="stat-item success">

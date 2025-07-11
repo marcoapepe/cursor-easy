@@ -132,3 +132,38 @@ The main page will have only two options:
 But I want to replace the name DARF by Upload. Change all references to DARF in the project.
 That means rename DARFPage.css and DARFPage.js to UploadPage.
 I don't want to see any page or code with the name DARF. I want to see Upload instead.
+
+Now we will make a significant change on the database.
+Disregard the current database connection.
+And we will have two new databases in the instance:
+database1 on 
+instance: PostgreSQL 15
+host: localhost
+port: 5432
+username: postgres
+password: postgres
+and 
+database2 on 
+instance: PostgreSQL 15
+host: localhost
+port: 5432
+username: postgres
+password: postgres
+
+The system will have two modules:
+1. Module A
+2. Module B
+The Module A will connect to database1 and Module B will connect to database2.
+
+In the backend project, in router contribuinte.py, modify all endpoints to accept 
+a new parameter to tell which module and therefore which database to use.
+Example: module = "A"  that refers to Module A and database1
+
+Later on fronted, we will create one ratio button on screen where the user will select the module.
+
+
+Now that we changed the backed to accept to modules: A and B, let's make the changes on the screen.
+On ContribuintePage, add a new field at the top right where the user will select the module A or B.
+This field will have Module A or Module B options.  Module A will be the default option.
+Base on that, all requests to the backend endpoints will have to inform the module. Or A or B. 
+The other filter fields will continue with the same behaviour.

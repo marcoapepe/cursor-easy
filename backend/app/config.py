@@ -4,7 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-    # Database
+    # Database URLs for different modules
+    DATABASE_URL_A: str = os.getenv("DATABASE_URL_A", "postgresql://postgres:postgres@localhost:5432/database1")
+    DATABASE_URL_B: str = os.getenv("DATABASE_URL_B", "postgresql://postgres:postgres@localhost:5432/database2")
+    
+    # Legacy support for backward compatibility
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
     
     # CORS Settings
